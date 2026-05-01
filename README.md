@@ -1,26 +1,82 @@
-# Journea – Setup Guide
+# Journea (Reflect AI)
 
-## How to Add Your Azure OpenAI API Key
+Journea is a minimalist, distraction-free journaling application built with React and Vite. It is designed specifically for overthinkers, providing a calm space to externalize thoughts with the help of a compassionate AI journaling companion.
 
-Open `config.js` and fill in these 3 values:
+![Journea Screenshot](public/vite.svg) *(Replace with actual app screenshot)*
 
-```js
-const AZURE_CONFIG = {
-  endpoint: "https://YOUR-RESOURCE-NAME.openai.azure.com",
-  apiKey: "YOUR_32_CHAR_API_KEY_HERE",
-  deploymentName: "gpt-4o",   // or gpt-35-turbo
-  apiVersion: "2024-02-01",
-};
+## ✦ Features
+
+- **Guided Daily Reflections:** Select your current mood to receive tailored, gentle journaling prompts.
+- **AI-Powered Companionship:** Uses Azure OpenAI (`o4-mini` / `gpt-4o-mini`) to read your daily entries and offer warm, non-judgmental reflections and follow-up questions.
+- **Weekly Insights:** Automatically generates a beautiful, structured summary of your past 7 days, analyzing mood trends, recurring themes, and triggers.
+- **Mindful Moments:** Generate short, randomized, AI-powered grounding exercises at the click of a button.
+- **Voice Input:** Native speech-to-text integration for hands-free, stream-of-consciousness journaling.
+- **Habit Suggestions:** Based on your recent entries, the AI can suggest one small, gentle habit to focus on.
+- **Privacy First:** All your journaling data is stored completely locally in your browser's `localStorage`.
+- **Graceful Offline Mode:** Fully functional even without an API key, falling back to a set of pre-written, thoughtful mock responses.
+
+## 🚀 Tech Stack
+
+- **Frontend Framework:** React 18
+- **Build Tool:** Vite
+- **Styling:** Vanilla CSS (Minimalist, dark-mode focused aesthetic)
+- **State Management:** React Context API
+- **AI Integration:** Azure OpenAI REST API
+
+## 🛠️ Setup & Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/anggtpd/Journea_WebApp.git
+   cd Journea_WebApp
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Azure OpenAI:**
+   Open `src/config.js` and replace the placeholder values with your actual Azure credentials:
+   ```javascript
+   export const AZURE_CONFIG = {
+     endpoint: "https://your-resource-name.openai.azure.com/",
+     apiKey: "your_azure_api_key", 
+     deploymentName: "gpt-4o-mini", // Or your custom deployment name (e.g., o4-mini)
+     apiVersion: "2024-12-01-preview",
+   };
+   ```
+   *Note: If you leave the API key blank or keep it as `your_key`, the app will automatically enter offline simulation mode.*
+
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   The app will be available at `http://localhost:5173`.
+
+## 📁 Project Structure
+
+```text
+src/
+├── context/         # Global state management (AppContext.jsx)
+├── lib/             # Utility functions
+│   ├── azureAi.js   # Azure OpenAI API integration and fallback simulation logic
+│   ├── constants.js # Hardcoded prompt pools, grounding texts, and emojis
+│   └── dummyData.js # Utility for generating fake journal entries for testing
+├── pages/           # React page components
+│   ├── Today.jsx    # Dashboard, recent entries, mindful moment
+│   ├── NewEntry.jsx # The core writing interface with voice & AI reflection
+│   ├── Journal.jsx  # Calendar view and history filtering
+│   ├── Insights.jsx # Weekly AI summary generation
+│   ├── Habits.jsx   # AI habit suggestion
+│   └── EntryDetail.jsx
+├── App.jsx          # Main routing and Sidebar layout
+├── index.css        # Global design system and custom UI components
+└── main.jsx         # React DOM entry point
 ```
 
-### Step-by-step:
+## 🔐 Security Note
+Currently, the Azure API key is stored client-side in `src/config.js` for development purposes. For production deployments, it is highly recommended to proxy the AI requests through a lightweight backend to keep your API keys secure.
 
-1. Go to https://portal.azure.com → search "Azure OpenAI"
-2. Open your resource → click **Keys and Endpoint** in the left menu
-3. Copy **Endpoint** → paste into `endpoint:`
-4. Copy **KEY 1** → paste into `apiKey:`
-5. Go to **Model deployments** → note your deployment name → paste into `deploymentName:`
-6. Save `config.js`
-7. Open `index.html` in your browser — the app will now use Azure OpenAI
-
-> Without a key, the app still works using built-in fallback responses.
+## 📄 License
+MIT License
