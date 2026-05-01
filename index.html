@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journea – Journal for Overthinkers</title>
+  <meta name="description" content="A calm, AI-powered journaling app that helps overthinkers process thoughts, identify emotional patterns, and build gentle habits." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== ONBOARDING OVERLAY ===== -->
+  <div id="onboarding-overlay" class="overlay active">
+    <div class="onboarding-container">
+      <div class="onboarding-step active" data-step="1">
+        <div class="onboarding-logo">
+          <span class="logo-icon">✦</span>
+          <span class="logo-text">Journea</span>
+        </div>
+        <h1 class="onboarding-title">A calmer place for<br/><em>your thoughts</em></h1>
+        <p class="onboarding-sub">Designed for minds that never stop. Let's create a gentle space just for you.</p>
+        <div class="goal-grid" id="goal-grid">
+          <button class="goal-card" data-goal="overthinking" id="goal-overthinking">
+            <span class="goal-icon">🌀</span>
+            <span>Reduce overthinking</span>
+          </button>
+          <button class="goal-card" data-goal="clarity" id="goal-clarity">
+            <span class="goal-icon">🔍</span>
+            <span>Gain mental clarity</span>
+          </button>
+          <button class="goal-card" data-goal="anxiety" id="goal-anxiety">
+            <span class="goal-icon">🌊</span>
+            <span>Ease anxiety</span>
+          </button>
+          <button class="goal-card" data-goal="awareness" id="goal-awareness">
+            <span class="goal-icon">🌱</span>
+            <span>Build self-awareness</span>
+          </button>
+        </div>
+        <button class="btn-primary" id="step1-next" disabled>Continue →</button>
+      </div>
+
+      <div class="onboarding-step" data-step="2">
+        <div class="onboarding-logo">
+          <span class="logo-icon">✦</span>
+          <span class="logo-text">Journea</span>
+        </div>
+        <h2 class="onboarding-title">How are you feeling<br/><em>right now?</em></h2>
+        <p class="onboarding-sub">No right or wrong answer. Just what's true for you at this moment.</p>
+        <div class="mood-grid" id="onboarding-mood-grid">
+          <button class="mood-card" data-mood="calm" id="ob-mood-calm"><span>😌</span><small>Calm</small></button>
+          <button class="mood-card" data-mood="anxious" id="ob-mood-anxious"><span>😰</span><small>Anxious</small></button>
+          <button class="mood-card" data-mood="sad" id="ob-mood-sad"><span>😔</span><small>Sad</small></button>
+          <button class="mood-card" data-mood="hopeful" id="ob-mood-hopeful"><span>🌤</span><small>Hopeful</small></button>
+          <button class="mood-card" data-mood="overwhelmed" id="ob-mood-overwhelmed"><span>😵</span><small>Overwhelmed</small></button>
+          <button class="mood-card" data-mood="grateful" id="ob-mood-grateful"><span>🙏</span><small>Grateful</small></button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-ghost" id="step2-back">← Back</button>
+          <button class="btn-primary" id="step2-next" disabled>Continue →</button>
+        </div>
+      </div>
+
+      <div class="onboarding-step" data-step="3">
+        <div class="onboarding-logo">
+          <span class="logo-icon">✦</span>
+          <span class="logo-text">Journea</span>
+        </div>
+        <h2 class="onboarding-title">Choose your<br/><em>journaling style</em></h2>
+        <p class="onboarding-sub">You can always change this later.</p>
+        <div class="style-grid">
+          <button class="style-card" data-style="guided" id="style-guided">
+            <span class="style-icon">🧭</span>
+            <strong>Guided</strong>
+            <small>AI prompts to lead the way</small>
+          </button>
+          <button class="style-card" data-style="flexible" id="style-flexible">
+            <span class="style-icon">🌿</span>
+            <strong>Flexible</strong>
+            <small>Prompts + your own flow</small>
+          </button>
+          <button class="style-card" data-style="minimal" id="style-minimal">
+            <span class="style-icon">✏️</span>
+            <strong>Minimal</strong>
+            <small>Blank canvas, pure writing</small>
+          </button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-ghost" id="step3-back">← Back</button>
+          <button class="btn-primary" id="step3-next" disabled>Begin Reflecting →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APP ===== -->
+  <div id="app" class="app hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">Journea</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-page="today" id="nav-today">
+          <span class="nav-icon">🌅</span>
+          <span>Today</span>
+        </a>
+        <a href="#" class="nav-item" data-page="new-entry" id="nav-new-entry">
+          <span class="nav-icon">✍️</span>
+          <span>New Entry</span>
+        </a>
+        <a href="#" class="nav-item" data-page="journal" id="nav-journal">
+          <span class="nav-icon">📖</span>
+          <span>Journal</span>
+        </a>
+        <a href="#" class="nav-item" data-page="insights" id="nav-insights">
+          <span class="nav-icon">✨</span>
+          <span>Insights</span>
+        </a>
+        <a href="#" class="nav-item" data-page="habits" id="nav-habits">
+          <span class="nav-icon">🌱</span>
+          <span>Habits</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-quote">
+        <p class="quote-text" id="sidebar-quote">"You don't have to control your thoughts. You just have to stop letting them control you."</p>
+        <span class="quote-author">— Dan Millman</span>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="main-content">
+
+      <!-- ── TODAY PAGE ── -->
+      <section class="page active" id="page-today">
+        <div class="page-header">
+          <div>
+            <p class="page-date" id="today-date">Thursday, May 1</p>
+            <h1 class="page-greeting" id="today-greeting">Good morning</h1>
+          </div>
+          <div class="mood-badge" id="today-mood-badge"></div>
+        </div>
+
+        <!-- Grounding card -->
+        <div class="grounding-card" id="grounding-card">
+          <div class="grounding-header">
+            <span class="grounding-label">🌬️ Moment of Calm</span>
+            <button class="btn-ghost-sm" id="refresh-grounding">New</button>
+          </div>
+          <p class="grounding-text" id="grounding-text">Take a slow breath. Notice five things you can see around you right now. You are here. You are safe.</p>
+        </div>
+
+        <!-- Today's prompts -->
+        <div class="section-header">
+          <h2 class="section-title">Today's Reflection</h2>
+          <button class="btn-teal-sm" id="start-writing-btn">Start Writing →</button>
+        </div>
+        <div class="prompts-grid" id="today-prompts">
+          <!-- filled by JS -->
+        </div>
+
+        <!-- Recent entries -->
+        <div class="section-header mt-lg">
+          <h2 class="section-title">Recent Entries</h2>
+          <a href="#" class="link-muted" data-page="journal" id="see-all-link">See all</a>
+        </div>
+        <div class="entries-list" id="recent-entries-list">
+          <!-- filled by JS -->
+        </div>
+      </section>
+
+      <!-- ── NEW ENTRY PAGE ── -->
+      <section class="page" id="page-new-entry">
+        <div class="page-header">
+          <div>
+            <p class="page-date" id="new-entry-date"></p>
+            <h1 class="page-title serif">New Entry</h1>
+          </div>
+          <button class="btn-ghost" id="cancel-entry-btn">Cancel</button>
+        </div>
+
+        <!-- Mood selector -->
+        <div class="card mb-md" id="mood-selector-card">
+          <p class="card-label">How are you feeling?</p>
+          <div class="mood-row" id="mood-row">
+            <button class="mood-pill" data-mood="calm" id="mood-calm">😌 Calm</button>
+            <button class="mood-pill" data-mood="anxious" id="mood-anxious">😰 Anxious</button>
+            <button class="mood-pill" data-mood="sad" id="mood-sad">😔 Sad</button>
+            <button class="mood-pill" data-mood="hopeful" id="mood-hopeful">🌤 Hopeful</button>
+            <button class="mood-pill" data-mood="overwhelmed" id="mood-overwhelmed">😵 Overwhelmed</button>
+            <button class="mood-pill" data-mood="grateful" id="mood-grateful">🙏 Grateful</button>
+            <button class="mood-pill" data-mood="angry" id="mood-angry">😤 Frustrated</button>
+            <button class="mood-pill" data-mood="content" id="mood-content">☀️ Content</button>
+          </div>
+        </div>
+
+        <!-- AI Prompt suggestion -->
+        <div class="ai-prompt-card" id="ai-prompt-card">
+          <div class="ai-prompt-header">
+            <span class="ai-badge">✦ AI Prompt</span>
+            <button class="btn-ghost-sm" id="new-prompt-btn">Try another</button>
+          </div>
+          <p class="ai-prompt-text" id="current-prompt">Select a mood to get a personalized prompt...</p>
+          <button class="btn-use-prompt" id="use-prompt-btn">Use this prompt ↓</button>
+        </div>
+
+        <!-- Writing area -->
+        <div class="writing-area-wrapper">
+          <textarea class="writing-area" id="journal-textarea" placeholder="Start writing... There's no right or wrong here. Just your thoughts." rows="12"></textarea>
+          <div class="writing-footer">
+            <span class="word-count" id="word-count">0 words</span>
+            <div class="tag-input-area">
+              <span class="tag-label">Tags:</span>
+              <div class="tags-container" id="tags-container">
+                <input type="text" class="tag-input" id="tag-input" placeholder="Add a tag..." />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Response -->
+        <div class="ai-response-card hidden" id="ai-response-card">
+          <div class="ai-response-header">
+            <span class="ai-badge">✦ Journea</span>
+            <div class="ai-typing-indicator hidden" id="ai-typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <p class="ai-response-text" id="ai-response-text"></p>
+          <div class="ai-followup hidden" id="ai-followup">
+            <p class="followup-question" id="followup-question"></p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="entry-actions">
+          <button class="btn-ghost" id="get-ai-response-btn">✦ Get AI Reflection</button>
+          <button class="btn-primary" id="save-entry-btn">Save Entry</button>
+        </div>
+      </section>
+
+      <!-- ── JOURNAL PAGE ── -->
+      <section class="page" id="page-journal">
+        <div class="page-header">
+          <h1 class="page-title serif">Journal</h1>
+          <button class="btn-teal-sm" id="new-entry-from-journal">+ New Entry</button>
+        </div>
+
+        <div class="search-bar-wrap">
+          <input type="text" class="search-bar" id="journal-search" placeholder="🔍  Search entries..." />
+        </div>
+
+        <div class="filter-row" id="mood-filter-row">
+          <button class="filter-pill active" data-filter="all" id="filter-all">All</button>
+          <button class="filter-pill" data-filter="calm" id="filter-calm">😌 Calm</button>
+          <button class="filter-pill" data-filter="anxious" id="filter-anxious">😰 Anxious</button>
+          <button class="filter-pill" data-filter="sad" id="filter-sad">😔 Sad</button>
+          <button class="filter-pill" data-filter="hopeful" id="filter-hopeful">🌤 Hopeful</button>
+          <button class="filter-pill" data-filter="overwhelmed" id="filter-overwhelmed">😵 Overwhelmed</button>
+          <button class="filter-pill" data-filter="grateful" id="filter-grateful">🙏 Grateful</button>
+        </div>
+
+        <div class="journal-entries-list" id="journal-entries-list">
+          <!-- filled by JS -->
+        </div>
+      </section>
+
+      <!-- ── ENTRY DETAIL PAGE ── -->
+      <section class="page" id="page-entry-detail">
+        <div class="page-header">
+          <button class="btn-ghost" id="back-to-journal-btn">← Back</button>
+          <button class="btn-ghost btn-danger" id="delete-entry-btn">Delete</button>
+        </div>
+        <div class="entry-detail-content" id="entry-detail-content">
+          <!-- filled by JS -->
+        </div>
+      </section>
+
+      <!-- ── INSIGHTS PAGE ── -->
+      <section class="page" id="page-insights">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title serif">Insights</h1>
+            <p class="page-sub">Your emotional patterns, made visible</p>
+          </div>
+          <button class="btn-teal-sm" id="generate-insights-btn">✦ Generate Weekly Insights</button>
+        </div>
+
+        <!-- Mood distribution -->
+        <div class="insights-grid">
+          <div class="card insight-card" id="mood-distribution-card">
+            <h3 class="card-title">Mood Distribution</h3>
+            <div class="mood-chart" id="mood-chart">
+              <!-- filled by JS -->
+            </div>
+          </div>
+
+          <div class="card insight-card" id="streak-card">
+            <h3 class="card-title">Writing Streak</h3>
+            <div class="streak-display" id="streak-display">
+              <span class="streak-number" id="streak-count">0</span>
+              <span class="streak-label">days</span>
+            </div>
+            <p class="streak-sub" id="streak-sub">Keep going — consistency builds clarity.</p>
+          </div>
+        </div>
+
+        <!-- Weekly AI insight -->
+        <div class="weekly-insight-card" id="weekly-insight-card">
+          <div class="weekly-insight-header">
+            <span class="ai-badge">✦ Weekly Reflection</span>
+            <span class="week-label" id="week-label"></span>
+          </div>
+          <div class="weekly-insight-body" id="weekly-insight-body">
+            <p class="insight-placeholder">Write at least 3 journal entries this week to unlock your weekly AI insight.</p>
+          </div>
+        </div>
+
+        <!-- Recurring themes -->
+        <div class="card mt-md" id="themes-card">
+          <h3 class="card-title">Recurring Themes</h3>
+          <div class="themes-cloud" id="themes-cloud">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ── HABITS PAGE ── -->
+      <section class="page" id="page-habits">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title serif">Habits</h1>
+            <p class="page-sub">Small steps, gentle progress</p>
+          </div>
+          <button class="btn-teal-sm" id="add-habit-btn">+ Add Habit</button>
+        </div>
+
+        <div class="habits-list" id="habits-list">
+          <!-- filled by JS -->
+        </div>
+
+        <div class="ai-habit-suggestion-card" id="ai-habit-suggestion-card">
+          <div class="ai-badge">✦ AI Suggestion</div>
+          <p class="habit-suggestion-text" id="habit-suggestion-text">Complete more journal entries to receive personalized habit suggestions.</p>
+          <button class="btn-ghost-sm" id="add-suggested-habit-btn" style="display:none;">+ Add this habit</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== MODALS ===== -->
+  <!-- Add Habit Modal -->
+  <div class="modal-overlay hidden" id="habit-modal-overlay">
+    <div class="modal" id="habit-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">New Habit</h3>
+        <button class="modal-close" id="habit-modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label">Habit Name</label>
+        <input type="text" class="form-input" id="habit-name-input" placeholder="e.g. Morning breathing (5 min)" maxlength="60" />
+        <label class="form-label mt-sm">How often?</label>
+        <div class="freq-row" id="freq-row">
+          <button class="freq-pill active" data-freq="daily" id="freq-daily">Daily</button>
+          <button class="freq-pill" data-freq="weekdays" id="freq-weekdays">Weekdays</button>
+          <button class="freq-pill" data-freq="3x" id="freq-3x">3× / week</button>
+        </div>
+        <label class="form-label mt-sm">Reminder time (optional)</label>
+        <input type="time" class="form-input" id="habit-time-input" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="habit-modal-cancel">Cancel</button>
+        <button class="btn-primary" id="habit-modal-save">Create Habit</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
