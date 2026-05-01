@@ -213,6 +213,15 @@
 
         <!-- Writing area -->
         <div class="writing-area-wrapper">
+          <div class="voice-bar" id="voice-bar">
+            <button class="mic-btn" id="mic-btn" title="Click to speak">
+              <span class="mic-icon" id="mic-icon">🎙️</span>
+            </button>
+            <span class="voice-status" id="voice-status">Click the mic to speak your thoughts</span>
+            <div class="voice-wave hidden" id="voice-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
           <textarea class="writing-area" id="journal-textarea" placeholder="Start writing... There's no right or wrong here. Just your thoughts." rows="12"></textarea>
           <div class="writing-footer">
             <span class="word-count" id="word-count">0 words</span>
@@ -249,28 +258,60 @@
       <!-- ── JOURNAL PAGE ── -->
       <section class="page" id="page-journal">
         <div class="page-header">
-          <h1 class="page-title serif">Journal</h1>
-          <button class="btn-teal-sm" id="new-entry-from-journal">+ New Entry</button>
+          <div>
+            <h1 class="page-title serif">Journal</h1>
+            <p class="journal-entry-count" id="journal-entry-count"></p>
+          </div>
+          <div class="journal-header-right">
+            <div class="view-toggle" id="view-toggle">
+              <button class="view-toggle-btn active" id="view-list-btn" data-view="list">
+                <span>⊞</span> List
+              </button>
+              <button class="view-toggle-btn" id="view-cal-btn" data-view="calendar">
+                <span>🗓</span> Calendar
+              </button>
+            </div>
+            <button class="btn-teal-sm" id="new-entry-from-journal">✎ New Entry</button>
+          </div>
         </div>
 
-        <div class="search-bar-wrap">
-          <input type="text" class="search-bar" id="journal-search" placeholder="🔍  Search entries..." />
+        <!-- LIST VIEW -->
+        <div id="journal-list-view">
+          <div class="search-bar-wrap">
+            <input type="text" class="search-bar" id="journal-search" placeholder="🔍  Search entries..." />
+          </div>
+          <div class="filter-row" id="mood-filter-row">
+            <button class="filter-pill" data-filter="calm" id="filter-calm">😌 Calm</button>
+            <button class="filter-pill" data-filter="anxious" id="filter-anxious">😰 Anxious</button>
+            <button class="filter-pill" data-filter="sad" id="filter-sad">😔 Sad</button>
+            <button class="filter-pill" data-filter="hopeful" id="filter-hopeful">🌤 Hopeful</button>
+            <button class="filter-pill" data-filter="overwhelmed" id="filter-overwhelmed">😵 Overwhelmed</button>
+            <button class="filter-pill" data-filter="grateful" id="filter-grateful">🙏 Grateful</button>
+          </div>
+          <div class="journal-entries-list" id="journal-entries-list">
+            <!-- filled by JS -->
+          </div>
         </div>
 
-        <div class="filter-row" id="mood-filter-row">
-          <button class="filter-pill active" data-filter="all" id="filter-all">All</button>
-          <button class="filter-pill" data-filter="calm" id="filter-calm">😌 Calm</button>
-          <button class="filter-pill" data-filter="anxious" id="filter-anxious">😰 Anxious</button>
-          <button class="filter-pill" data-filter="sad" id="filter-sad">😔 Sad</button>
-          <button class="filter-pill" data-filter="hopeful" id="filter-hopeful">🌤 Hopeful</button>
-          <button class="filter-pill" data-filter="overwhelmed" id="filter-overwhelmed">😵 Overwhelmed</button>
-          <button class="filter-pill" data-filter="grateful" id="filter-grateful">🙏 Grateful</button>
-        </div>
-
-        <div class="journal-entries-list" id="journal-entries-list">
-          <!-- filled by JS -->
+        <!-- CALENDAR VIEW -->
+        <div id="journal-calendar-view" class="hidden">
+          <div class="cal-wrap">
+            <div class="cal-nav">
+              <button class="cal-nav-btn" id="cal-prev">‹</button>
+              <span class="cal-month-label" id="cal-month-label">May 2026</span>
+              <button class="cal-nav-btn" id="cal-next">›</button>
+            </div>
+            <div class="cal-grid-header">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
+              <span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div class="cal-grid" id="cal-grid">
+              <!-- filled by JS -->
+            </div>
+          </div>
         </div>
       </section>
+
 
       <!-- ── ENTRY DETAIL PAGE ── -->
       <section class="page" id="page-entry-detail">
@@ -315,21 +356,24 @@
         <!-- Weekly AI insight -->
         <div class="weekly-insight-card" id="weekly-insight-card">
           <div class="weekly-insight-header">
-            <span class="ai-badge">✦ Weekly Reflection</span>
-            <span class="week-label" id="week-label"></span>
+            <div class="weekly-insight-header-left">
+              <span class="wi-icon">⟁</span>
+              <span class="wi-week-label" id="week-label">Week of —</span>
+            </div>
+            <span class="wi-entry-count" id="wi-entry-count"></span>
           </div>
           <div class="weekly-insight-body" id="weekly-insight-body">
-            <p class="insight-placeholder">Write at least 3 journal entries this week to unlock your weekly AI insight.</p>
+            <p class="insight-placeholder">Write at least 2 journal entries this week to unlock your AI insight.</p>
           </div>
         </div>
 
-        <!-- Recurring themes -->
+        <!-- Recurring Themes (hidden)
         <div class="card mt-md" id="themes-card">
           <h3 class="card-title">Recurring Themes</h3>
           <div class="themes-cloud" id="themes-cloud">
-            <!-- filled by JS -->
           </div>
         </div>
+        -->
       </section>
 
       <!-- ── HABITS PAGE ── -->
