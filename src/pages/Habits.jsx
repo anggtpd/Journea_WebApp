@@ -9,6 +9,8 @@ export default function Habits() {
   const [newHabitName, setNewHabitName] = useState('');
   const [newHabitFreq, setNewHabitFreq] = useState('daily');
   const [newHabitTime, setNewHabitTime] = useState('');
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const todayStr = new Date().toDateString();
   const weekEntries = state.entries.filter(e => Date.now() - e.date < 7 * 24 * 3600 * 1000);
@@ -20,18 +22,25 @@ export default function Habits() {
   }, []);
 
   const loadSuggestion = async () => {
+    setIsRefreshing(true);
     if (weekEntries.length < 1) {
       const rand = HABIT_SUGGESTIONS[Math.floor(Math.random() * HABIT_SUGGESTIONS.length)];
       updateState({ habitSuggestion: rand });
+      setIsRefreshing(false);
       return;
     }
     const messages = [
       { role: 'system', content: 'You are Journea. Based on these journal entries, suggest ONE short, gentle habit (max 8 words). Return only the habit name, nothing else.' },
       { role: 'user', content: weekEntries.map(e => `Mood:${e.mood} — ${e.text.slice(0, 200)}`).join('\n') },
     ];
-    const suggestion = await callAzureAI(messages);
-    const habitName = suggestion.replace(/["*]/g, '').trim().split('\n')[0].slice(0, 60);
-    updateState({ habitSuggestion: { name: habitName, freq: 'daily' } });
+    try {
+      const suggestion = await callAzureAI(messages);
+      const habitName = suggestion.replace(/["*]/g, '').trim().split('\n')[0].slice(0, 60);
+      updateState({ habitSuggestion: { name: habitName, freq: 'daily' } });
+    } catch (e) {
+      console.error("Failed to load suggestion:", e);
+    }
+    setIsRefreshing(false);
   };
 
   const toggleHabit = (idx) => {
@@ -56,9 +65,27 @@ export default function Habits() {
 
   const saveHabit = () => {
     if (!newHabitName.trim()) { alert('Please enter a habit name.'); return; }
-    const newHabits = [...state.habits, { name: newHabitName.trim(), freq: newHabitFreq, time: newHabitTime, streak: 0, doneToday: '' }];
+    const newHabits = [...state.habits];
+    if (editingIndex !== null) {
+      newHabits[editingIndex] = { 
+        ...newHabits[editingIndex], 
+        freq: newHabitFreq, 
+        time: newHabitTime 
+      };
+    } else {
+      newHabits.push({ name: newHabitName.trim(), freq: newHabitFreq, time: newHabitTime, streak: 0, doneToday: '' });
+    }
     updateState({ habits: newHabits });
     closeModal();
+  };
+
+  const handleEditHabit = (idx) => {
+    const h = state.habits[idx];
+    setNewHabitName(h.name);
+    setNewHabitFreq(h.freq);
+    setNewHabitTime(h.time || '');
+    setEditingIndex(idx);
+    setModalOpen(true);
   };
 
   const addSuggestedHabit = () => {
@@ -72,6 +99,7 @@ export default function Habits() {
     setNewHabitName('');
     setNewHabitFreq('daily');
     setNewHabitTime('');
+    setEditingIndex(null);
   };
 
   return (
@@ -100,7 +128,10 @@ export default function Habits() {
                 <div className="habit-freq">{h.freq} {h.time ? `· ${h.time}` : ''}</div>
               </div>
               <span className="habit-streak">{h.streak || 0} day streak</span>
-              <button className="habit-delete" onClick={() => deleteHabit(i)}>✕</button>
+              <div className="habit-actions">
+                <button className="habit-action-btn" onClick={() => handleEditHabit(i)}>✎</button>
+                <button className="habit-action-btn" onClick={() => deleteHabit(i)}>✕</button>
+              </div>
             </div>
           ))
         )}
@@ -117,32 +148,43 @@ export default function Habits() {
         <p className="habit-suggestion-text">
           {state.habitSuggestion ? `Based on your recent entries, try: "${state.habitSuggestion.name}"` : 'Loading suggestion...'}
         </p>
-        <button 
-          className="btn-ghost-sm" 
-          style={{ width: 'max-content', padding: '.4rem .8rem', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)' }}
-          onClick={addSuggestedHabit}
-          disabled={!state.habitSuggestion}
-        >
-          + Add this habit
-        </button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button 
+            className="btn-ghost-sm" 
+            style={{ width: 'max-content', padding: '.4rem .8rem', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)' }}
+            onClick={addSuggestedHabit}
+            disabled={!state.habitSuggestion || isRefreshing}
+          >
+            + Add this habit
+          </button>
+          <button 
+            className="btn-ghost-sm" 
+            style={{ width: 'max-content', padding: '.4rem .8rem', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)' }}
+            onClick={loadSuggestion}
+            disabled={isRefreshing}
+          >
+            {isRefreshing ? '...' : '↻ Another habit'}
+          </button>
+        </div>
       </div>
 
       {modalOpen && (
         <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') closeModal(); }}>
           <div className="modal">
             <div className="modal-header">
-              <h3 className="modal-title">New Habit</h3>
+              <h3 className="modal-title">{editingIndex !== null ? 'Edit Habit' : 'New Habit'}</h3>
               <button className="modal-close" onClick={closeModal}>✕</button>
             </div>
             <div className="modal-body">
               <label className="form-label">Habit Name</label>
               <input 
                 type="text" 
-                className="form-input" 
+                className={`form-input ${editingIndex !== null ? 'disabled' : ''}`}
                 placeholder="e.g., 5-minute breathing" 
                 style={{ marginBottom: '1.25rem' }} 
                 value={newHabitName}
                 onChange={e => setNewHabitName(e.target.value)}
+                readOnly={editingIndex !== null}
               />
               
               <label className="form-label">Frequency</label>

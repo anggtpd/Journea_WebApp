@@ -1,36 +1,58 @@
 import { AZURE_CONFIG } from '../../config.js';
 
 export async function callAzureAI(messages) {
-  const { endpoint, apiKey, deploymentName, apiVersion } = AZURE_CONFIG;
-  if (!apiKey || apiKey.includes('your-')) {
-    return simulateAI(messages);
-  }
-  try {
-    const baseUrl = endpoint.endsWith('/') ? endpoint.slice(0, -1) : endpoint;
-    const url = `${baseUrl}/openai/deployments/${deploymentName}/chat/completions?api-version=${apiVersion}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
-      body: JSON.stringify({ messages, max_completion_tokens: 800 })
-    });
+  const { endpoint, apiKey, deploymentName, apiVersion, openai } = AZURE_CONFIG;
+  
+  // Try Azure if key is available and doesn't look like a placeholder
+  if (apiKey && !apiKey.includes('your-')) { 
+    try {
+      const baseUrl = endpoint.endsWith('/') ? endpoint.slice(0, -1) : endpoint;
+      const url = `${baseUrl}/openai/deployments/${deploymentName}/chat/completions?api-version=${apiVersion}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
+        body: JSON.stringify({ messages, max_completion_tokens: 800 })
+      });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error('Azure AI Error:', res.status, errText);
-      return simulateAI(messages);
+      if (res.ok) {
+        const data = await res.json();
+        const content = data.choices?.[0]?.message?.content || '';
+        if (content.trim()) return content;
+      }
+      
+      console.error('Azure AI failed, trying OpenAI fallback...');
+    } catch (e) {
+      console.error('Azure AI Exception, trying OpenAI fallback:', e);
     }
-
-    const data = await res.json();
-    const content = data.choices?.[0]?.message?.content || '';
-    if (!content.trim()) {
-      console.warn("Azure AI returned an empty string. Falling back.");
-      return simulateAI(messages);
-    }
-    return content;
-  } catch (e) {
-    console.error('Azure AI Exception:', e);
-    return simulateAI(messages);
   }
+
+  // Fallback to OpenAI if key is available
+  if (openai?.apiKey && !openai.apiKey.includes('your_')) {
+    try {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${openai.apiKey}` 
+        },
+        body: JSON.stringify({ 
+          model: openai.model,
+          messages, 
+          max_tokens: 800 
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        return data.choices?.[0]?.message?.content || simulateAI(messages);
+      }
+      console.error('OpenAI API failed:', await res.text());
+    } catch (e) {
+      console.error('OpenAI Exception:', e);
+    }
+  }
+
+  return simulateAI(messages);
 }
 
 function simulateAI(messages) {

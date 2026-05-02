@@ -7,13 +7,13 @@ Journea is a minimalist, distraction-free journaling application built with Reac
 ## ✦ Features
 
 - **Guided Daily Reflections:** Select your current mood to receive tailored, gentle journaling prompts.
-- **AI-Powered Companionship:** Uses Azure OpenAI (`o4-mini` / `gpt-4o-mini`) to read your daily entries and offer warm, non-judgmental reflections and follow-up questions.
+- **AI-Powered Companionship:** Uses Azure OpenAI (`o4-mini` / `gpt-4o-mini`) or native OpenAI as a fallback to read your daily entries and offer warm, non-judgmental reflections.
 - **Weekly Insights:** Automatically generates a beautiful, structured summary of your past 7 days, analyzing mood trends, recurring themes, and triggers.
 - **Mindful Moments:** Generate short, randomized, AI-powered grounding exercises at the click of a button.
 - **Voice Input:** Native speech-to-text integration for hands-free, stream-of-consciousness journaling.
 - **Habit Suggestions:** Based on your recent entries, the AI can suggest one small, gentle habit to focus on.
 - **Privacy First:** All your journaling data is stored completely locally in your browser's `localStorage`.
-- **Graceful Offline Mode:** Fully functional even without an API key, falling back to a set of pre-written, thoughtful mock responses.
+- **Hybrid AI Logic:** Intelligent fallback mechanism that prioritizes Azure OpenAI but automatically switches to native OpenAI if Azure is unavailable.
 
 ## 🚀 Tech Stack
 
@@ -21,7 +21,7 @@ Journea is a minimalist, distraction-free journaling application built with Reac
 - **Build Tool:** Vite
 - **Styling:** Vanilla CSS (Minimalist, dark-mode focused aesthetic)
 - **State Management:** React Context API
-- **AI Integration:** Azure OpenAI REST API
+- **AI Integration:** Azure OpenAI & OpenAI REST APIs
 
 ## 🛠️ Setup & Installation
 
@@ -36,17 +36,20 @@ Journea is a minimalist, distraction-free journaling application built with Reac
    npm install
    ```
 
-3. **Configure Azure OpenAI:**
-   Open `src/config.js` and replace the placeholder values with your actual Azure credentials:
-   ```javascript
-   export const AZURE_CONFIG = {
-     endpoint: "https://your-resource-name.openai.azure.com/",
-     apiKey: "your_azure_api_key", 
-     deploymentName: "gpt-4o-mini", // Or your custom deployment name (e.g., o4-mini)
-     apiVersion: "2024-12-01-preview",
-   };
+3. **Configure Environment Variables:**
+   Create a `.env` file in the root directory (you can copy `.env.example`) and add your API keys:
+   ```env
+   # Azure OpenAI Settings
+   VITE_AZURE_AI_PROJECT_ENDPOINT=your_endpoint_url
+   VITE_AZURE_OPENAI_API_KEY=your_azure_key
+   VITE_MODEL_DEPLOYMENT_NAME=gpt-4o-mini
+   VITE_AZURE_OPENAI_API_VERSION=2024-12-01-preview
+
+   # OpenAI Fallback Settings (Optional)
+   VITE_OPENAI_API_KEY=your_openai_key
+   VITE_OPENAI_MODEL_NAME=gpt-4o-mini
    ```
-   *Note: If you leave the API key blank or keep it as `your_key`, the app will automatically enter offline simulation mode.*
+   *Note: If all API keys are left blank, the app will automatically enter offline simulation mode.*
 
 4. **Start the development server:**
    ```bash

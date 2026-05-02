@@ -32,7 +32,9 @@ export default function Sidebar() {
             className={`nav-item ${state.page === item.id ? 'active' : ''}`}
             onClick={(e) => {
               e.preventDefault();
-              updateState({ page: item.id });
+              const updates = { page: item.id };
+              if (item.id === 'new-entry') updates.currentPrompt = 'Free Write';
+              updateState(updates);
             }}
           >
             <span className="nav-icon">{item.icon}</span>

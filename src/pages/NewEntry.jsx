@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { PROMPTS, MOOD_EMOJIS } from '../lib/constants';
 import { callAzureAI } from '../lib/azureAi';
+import { calculateStreak } from '../lib/utils';
 
 export default function NewEntry() {
   const { state, updateState } = useAppContext();
@@ -25,7 +26,7 @@ export default function NewEntry() {
     // Initialization when entering page
     const mood = state.mood || 'default';
     const pool = PROMPTS[mood] || PROMPTS.default;
-    setCurrentPrompt(state.currentPrompt || pool[Math.floor(Math.random() * pool.length)]);
+    setCurrentPrompt(state.currentPrompt || 'Free Write');
     setText('');
     setTags([]);
     setSelectedMood('');
@@ -185,23 +186,10 @@ export default function NewEntry() {
       aiResponse,
       aiFollowup
     };
-    
-    // Update streak logic
-    const today = new Date(); today.setHours(0,0,0,0);
-    const dates = [entry, ...state.entries].map(e => {
-      const d = new Date(e.date); d.setHours(0,0,0,0); return d.getTime();
-    });
-    const unique = [...new Set(dates)].sort((a,b) => b - a);
-    let streak = 0; let check = today.getTime();
-    for (const d of unique) {
-      if (d === check) { streak++; check -= 86400000; }
-      else if (d === check + 86400000) { check = d - 86400000; streak++; }
-      else break;
-    }
 
     updateState({ 
       entries: [entry, ...state.entries], 
-      streak,
+      streak: calculateStreak([entry, ...state.entries]),
       page: 'journal'
     });
   };
@@ -236,16 +224,14 @@ export default function NewEntry() {
         </div>
       </div>
 
-      {state.style !== 'minimal' && (
-        <div className="ai-prompt-card">
-          <div className="ai-prompt-header">
-            <span className="ai-badge">✦ PROMPT</span>
-            <button className="btn-ghost-sm" onClick={handleNewPrompt}>↻ Another one</button>
-          </div>
-          <p className="ai-prompt-text">{currentPrompt}</p>
-          <button className="btn-use-prompt" onClick={handleUsePrompt}>Use this prompt</button>
+      <div className="ai-prompt-card">
+        <div className="ai-prompt-header">
+          <span className="ai-badge">✦ PROMPT</span>
+          <button className="btn-ghost-sm" onClick={handleNewPrompt}>↻ Another one</button>
         </div>
-      )}
+        <p className="ai-prompt-text">{currentPrompt}</p>
+        <button className="btn-use-prompt" onClick={handleUsePrompt}>Use this prompt</button>
+      </div>
 
       <div className="writing-area-wrapper">
         {voiceSupported && (

@@ -66,7 +66,7 @@ export default function Journal() {
               <span>🗓</span> Calendar
             </button>
           </div>
-          <button className="btn-teal-sm" onClick={() => updateState({ page: 'new-entry' })}>✎ New Entry</button>
+          <button className="btn-teal-sm" onClick={() => updateState({ currentPrompt: 'Free Write', page: 'new-entry' })}>✎ New Entry</button>
         </div>
       </div>
 
@@ -92,31 +92,27 @@ export default function Journal() {
               </button>
             ))}
           </div>
-          <div className="journal-entries-list">
+          <div className="entries-list">
             {entries.length === 0 ? (
               <p className="no-entries">No entries found.</p>
             ) : (
               entries.map(e => (
                 <div key={e.id} className="entry-card" onClick={() => openEntry(e.id)}>
-                  <div className="entry-card-left">
-                    <div className="entry-meta">
-                      <span className="entry-date-label">
-                        {new Date(e.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                      </span>
-                      {e.mood && (
-                        <span className="entry-mood-tag">{MOOD_EMOJIS[e.mood] || ''} {e.mood}</span>
-                      )}
-                    </div>
-                    <p className="entry-preview">
-                      {e.text.replace(/\n/g, ' ').slice(0, 120) + (e.text.length > 120 ? '...' : '')}
-                    </p>
-                    {e.tags && e.tags.length > 0 && (
-                      <div className="entry-tags">
-                        {e.tags.map(t => <span key={t} className="entry-tag">{t}</span>)}
-                      </div>
-                    )}
+                  <div className="entry-card-mood">
+                    {MOOD_EMOJIS[e.mood] || '✍️'}
                   </div>
-                  <span className="entry-arrow">›</span>
+                  <div className="entry-card-meta">
+                    <strong>{new Date(e.date).toLocaleDateString('en-US', { weekday: 'long' })}</strong> &nbsp;•&nbsp; 
+                    {new Date(e.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </div>
+                  <p className="entry-card-text">
+                    {e.text}
+                  </p>
+                  {e.tags && e.tags.length > 0 && (
+                    <div className="entry-card-tags">
+                      {e.tags.map(t => <span key={t} className="entry-card-tag">{t}</span>)}
+                    </div>
+                  )}
                 </div>
               ))
             )}

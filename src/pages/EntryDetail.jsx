@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { MOOD_EMOJIS } from '../lib/constants';
+import { calculateStreak } from '../lib/utils';
 
 export default function EntryDetail() {
   const { state, updateState } = useAppContext();
@@ -13,20 +14,12 @@ export default function EntryDetail() {
     if (!confirm('Are you sure you want to delete this entry?')) return;
     const newEntries = state.entries.filter(e => e.id !== state.currentEntryId);
     
-    // Update streak logic
-    const today = new Date(); today.setHours(0,0,0,0);
-    const dates = newEntries.map(e => {
-      const d = new Date(e.date); d.setHours(0,0,0,0); return d.getTime();
+    updateState({ 
+      entries: newEntries, 
+      streak: calculateStreak(newEntries), 
+      currentEntryId: null, 
+      page: 'journal' 
     });
-    const unique = [...new Set(dates)].sort((a,b) => b - a);
-    let streak = 0; let check = today.getTime();
-    for (const d of unique) {
-      if (d === check) { streak++; check -= 86400000; }
-      else if (d === check + 86400000) { check = d - 86400000; streak++; }
-      else break;
-    }
-
-    updateState({ entries: newEntries, streak, currentEntryId: null, page: 'journal' });
   };
 
   const dateStr = new Date(entry.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });

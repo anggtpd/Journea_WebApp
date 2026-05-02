@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { calculateStreak } from '../lib/utils';
 
 const AppContext = createContext();
 
@@ -43,6 +44,14 @@ export const AppProvider = ({ children }) => {
       habitSuggestion: null,
     };
   });
+
+  useEffect(() => {
+    // Recalculate streak on mount to ensure it's always accurate
+    const actualStreak = calculateStreak(state.entries || []);
+    if (actualStreak !== state.streak) {
+      updateState({ streak: actualStreak });
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('reflectai_state', JSON.stringify(state));
