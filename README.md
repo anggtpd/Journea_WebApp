@@ -2,7 +2,11 @@
 
 Journea is a minimalist, distraction-free journaling application built with React and Vite. It is designed specifically for overthinkers, providing a calm space to externalize thoughts with the help of a compassionate AI journaling companion.
 
-<img width="500" alt="Untitled" src="https://github.com/user-attachments/assets/9bdfdf13-793f-4d32-8e04-2be136a88695" />
+
+<img width="1470" height="923" alt="image" src="https://github.com/user-attachments/assets/4ca83a27-ae5d-4451-acc5-44a914de9d4a" />
+
+Demo: https://youtu.be/BDXnaREFwCQ
+
 
 ## ✦ Features
 
