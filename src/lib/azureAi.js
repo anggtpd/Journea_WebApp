@@ -1,4 +1,4 @@
-import { AZURE_CONFIG } from '../config.js';
+import { AZURE_CONFIG } from '../../config.js';
 
 export async function callAzureAI(messages) {
   const { endpoint, apiKey, deploymentName, apiVersion } = AZURE_CONFIG;
